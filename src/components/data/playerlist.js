@@ -153,7 +153,7 @@ const playerlist = [
     name: "Jar of Peanut Butter",
     forward: 2,
     goalie: 1,
-    stamina: 9,
+    stamina: 4,
     shooting: 2,
     defense: 1,
     size: 1,

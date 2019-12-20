@@ -43,7 +43,7 @@ class Standings extends React.Component {
   rankTeams = () => {
     let teams = this.state.teamsStats;
     teams.sort(function(a, b) {
-      return b.wins - a.wins;
+      return b.points - a.points || b.goalsFor - a.goalsFor;
     });
     this.setState({ teamsStats: teams });
   };
@@ -77,46 +77,88 @@ class Standings extends React.Component {
         <table>
           <tbody>
             <tr>
-              <th>Current Seed</th>
+              <th>Seed</th>
               <th>Team</th>
-              <th>Wins</th>
-              <th>Losses</th>
+              <th> Wins </th>
+              <th> Losses </th>
+              <th>OTL</th>
+              <th></th>
+              <th>Scored</th>
+              <th>Allowed</th>
+              <th></th>
+              <th>Points</th>
             </tr>
             <tr>
               <th>1</th>
               <th>{this.state.teamsStats[0].team}</th>
               <th>{this.state.teamsStats[0].wins}</th>
               <th>{this.state.teamsStats[0].losses}</th>
+              <th>{this.state.teamsStats[0].overtime}</th>
+              <th>-</th>
+              <th>{this.state.teamsStats[0].goalsFor}</th>
+              <th>{this.state.teamsStats[0].goalsAllowed}</th>
+              <th>-</th>
+              <th>{this.state.teamsStats[0].points}</th>
             </tr>
             <tr>
               <th>2</th>
               <th>{this.state.teamsStats[1].team}</th>
               <th>{this.state.teamsStats[1].wins}</th>
               <th>{this.state.teamsStats[1].losses}</th>
+              <th>{this.state.teamsStats[1].overtime}</th>
+              <th>-</th>
+              <th>{this.state.teamsStats[1].goalsFor}</th>
+              <th>{this.state.teamsStats[1].goalsAllowed}</th>
+              <th>-</th>
+              <th>{this.state.teamsStats[1].points}</th>
             </tr>
             <tr>
               <th>3</th>
               <th>{this.state.teamsStats[2].team}</th>
               <th>{this.state.teamsStats[2].wins}</th>
               <th>{this.state.teamsStats[2].losses}</th>
+              <th>{this.state.teamsStats[2].overtime}</th>
+              <th>-</th>
+              <th>{this.state.teamsStats[2].goalsFor}</th>
+              <th>{this.state.teamsStats[2].goalsAllowed}</th>
+              <th>-</th>
+              <th>{this.state.teamsStats[2].points}</th>
             </tr>
             <tr>
               <th>4</th>
               <th>{this.state.teamsStats[3].team}</th>
               <th>{this.state.teamsStats[3].wins}</th>
               <th>{this.state.teamsStats[3].losses}</th>
+              <th>{this.state.teamsStats[3].overtime}</th>
+              <th>-</th>
+              <th>{this.state.teamsStats[3].goalsFor}</th>
+              <th>{this.state.teamsStats[3].goalsAllowed}</th>
+              <th>-</th>
+              <th>{this.state.teamsStats[3].points}</th>
             </tr>
             <tr>
               <th></th>
               <th>{this.state.teamsStats[4].team}</th>
               <th>{this.state.teamsStats[4].wins}</th>
               <th>{this.state.teamsStats[4].losses}</th>
+              <th>{this.state.teamsStats[4].overtime}</th>
+              <th>-</th>
+              <th>{this.state.teamsStats[4].goalsFor}</th>
+              <th>{this.state.teamsStats[4].goalsAllowed}</th>
+              <th>-</th>
+              <th>{this.state.teamsStats[4].points}</th>
             </tr>
             <tr>
               <th></th>
               <th>{this.state.teamsStats[5].team}</th>
               <th>{this.state.teamsStats[5].wins}</th>
               <th>{this.state.teamsStats[5].losses}</th>
+              <th>{this.state.teamsStats[5].overtime}</th>
+              <th>-</th>
+              <th>{this.state.teamsStats[5].goalsFor}</th>
+              <th>{this.state.teamsStats[5].goalsAllowed}</th>
+              <th>-</th>
+              <th>{this.state.teamsStats[5].points}</th>
             </tr>
           </tbody>
         </table>

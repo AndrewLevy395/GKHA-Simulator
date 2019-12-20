@@ -107,15 +107,15 @@ class Franchise extends React.Component {
     this.setState({
       game1: [
         result1.winner + " " + result1.winscore + " WIN! - ",
-        result1.loser + " " + result1.losescore + " LOSE!"
+        result1.loser + " " + result1.losescore + " LOSE! " + result1.overtime
       ],
       game2: [
         result2.winner + " " + result2.winscore + " WIN! - ",
-        result2.loser + " " + result2.losescore + " LOSE!"
+        result2.loser + " " + result2.losescore + " LOSE! " + result2.overtime
       ],
       game3: [
         result3.winner + " " + result3.winscore + " WIN! - ",
-        result3.loser + " " + result3.losescore + " LOSE!"
+        result3.loser + " " + result3.losescore + " LOSE! " + result3.overtime
       ]
     });
     this.setState({
@@ -125,33 +125,59 @@ class Franchise extends React.Component {
 
   //calculates and returns winners and scores
   calculateCaps = game => {
+    let randOT = 0;
+    let isOT = "";
     let teams = this.state.teamsStats;
     let home = teams[game.t1 - 1];
     let away = teams[game.t2 - 1];
     let gameTeams = { home: home, away: away };
     let winner = this.calculateWinner(gameTeams);
     let score = this.calculateScore();
+    if (score.winScore - score.loseScore === 1) {
+      randOT = Math.floor(Math.random() * 4 + 1);
+    }
+    let sendResult = {
+      team: "",
+      wingoals: score.winScore,
+      losegoals: score.loseScore
+    };
     if (winner === "home") {
-      this.setWinner(home.team);
-      this.setLoser(away.team);
+      sendResult.team = home.team;
+      this.setWinner(sendResult);
+      sendResult.team = away.team;
+      if (randOT === 3) {
+        isOT = "OT";
+        this.setOvertime(sendResult);
+      } else {
+        this.setLoser(sendResult);
+      }
       return {
         home: home.team,
         away: away.team,
         winner: home.team,
         loser: away.team,
         winscore: score.winScore,
-        losescore: score.loseScore
+        losescore: score.loseScore,
+        overtime: isOT
       };
     } else {
-      this.setWinner(away.team);
-      this.setLoser(home.team);
+      sendResult.team = away.team;
+      this.setWinner(sendResult);
+      sendResult.team = home.team;
+      if (randOT === 3) {
+        isOT = "OT";
+        this.setOvertime(sendResult);
+      } else {
+        this.setLoser(sendResult);
+      }
       return {
         home: home.team,
         away: away.team,
         winner: away.team,
         loser: home.team,
         winscore: score.winScore,
-        losescore: score.loseScore
+        losescore: score.loseScore,
+        overtime: isOT
       };
     }
   };
@@ -161,7 +187,7 @@ class Franchise extends React.Component {
     let winner;
     let playerList = { playerlist };
     let players = playerList.playerlist;
-    let hg, hf, ag, af, totalChance;
+    let hg, hf, hd, ag, af, ad, totalChance;
     let homeChance = 1;
     let awayChance = 1;
     for (let i = 0; i < players.length; i++) {
@@ -173,19 +199,33 @@ class Franchise extends React.Component {
         hg = players[i];
       } else if (gameTeams.away.goalie === players[i].name) {
         ag = players[i];
+      } else if (gameTeams.home.dforward === players[i].name) {
+        hd = players[i];
+      } else if (gameTeams.away.dforward === players[i].name) {
+        ad = players[i];
       }
     }
 
     //determine if forward caps are better than goalie caps of opposing team
     if (hf.forward >= ag.goalie) {
-      homeChance = homeChance + 20;
+      homeChance = homeChance + 15;
     } else {
-      awayChance = awayChance + 20;
+      awayChance = awayChance + 15;
+    }
+    if (hd.forward >= ag.goalie) {
+      homeChance = homeChance + 10;
+    } else {
+      awayChance = awayChance + 10;
     }
     if (hg.goalie >= af.forward) {
-      homeChance = homeChance + 20;
+      homeChance = homeChance + 15;
     } else {
-      awayChance = awayChance + 20;
+      awayChance = awayChance + 15;
+    }
+    if (hg.goalie >= ad.forward) {
+      homeChance = homeChance + 10;
+    } else {
+      awayChance = awayChance + 10;
     }
 
     //determine if shooting, defense, and strength are better for each forward
@@ -194,27 +234,27 @@ class Franchise extends React.Component {
     } else {
       awayChance = awayChance + 10;
     }
-    if (hf.defense >= af.defense) {
+    if (hd.defense >= ad.defense) {
       homeChance = homeChance + 10;
     } else {
       awayChance = awayChance + 10;
     }
     if (hf.strength >= af.strength) {
-      homeChance = homeChance + 10;
+      homeChance = homeChance + 4;
     } else {
-      awayChance = awayChance + 10;
+      awayChance = awayChance + 4;
+    }
+    if (hd.strength >= ad.strength) {
+      homeChance = homeChance + 4;
+    } else {
+      awayChance = awayChance + 4;
     }
 
-    //determine if size and strength are better for each goalie
+    //determine if size is better for each goalie
     if (hg.size >= ag.size) {
       homeChance = homeChance + 20;
     } else {
       awayChance = awayChance + 20;
-    }
-    if (hg.strength >= ag.strength) {
-      homeChance = homeChance + 8;
-    } else {
-      awayChance = awayChance + 8;
     }
 
     //randomize winner based on chances
@@ -251,7 +291,7 @@ class Franchise extends React.Component {
   //increments record of winning teams
   setWinner = winner => {
     let userdata = {
-      team: winner,
+      result: winner,
       status: "win"
     };
     let stringdata = JSON.stringify(userdata);
@@ -268,8 +308,25 @@ class Franchise extends React.Component {
   //increments record of losing teams
   setLoser = loser => {
     let userdata = {
-      team: loser,
+      result: loser,
       status: "lose"
+    };
+    let stringdata = JSON.stringify(userdata);
+    fetch("http://localhost:8080/setrecord", {
+      method: "POST",
+      body: stringdata,
+      credentials: "include",
+      headers: { "Content-Type": "application/json" }
+    }).then(() => {
+      console.log("Worked");
+    });
+  };
+
+  //increments record of losing teams
+  setOvertime = overtimer => {
+    let userdata = {
+      result: overtimer,
+      status: "overtime"
     };
     let stringdata = JSON.stringify(userdata);
     fetch("http://localhost:8080/setrecord", {
