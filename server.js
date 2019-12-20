@@ -267,6 +267,19 @@ app.get("/weekget", function(req, res) {
 });
 
 //get the username of the session
+app.get("/userteamget", function(req, res) {
+  let franchise;
+
+  franchiseColl.findOne({ username: req.session.user }, function(err, bdata) {
+    if (err) {
+      return done(err);
+    }
+    franchise = bdata.userteam;
+    return res.end(JSON.stringify(franchise));
+  });
+});
+
+//get the userteam of the session
 app.get("/usernameget", function(req, res) {
   res.end(req.session.user);
 });

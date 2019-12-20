@@ -2,15 +2,19 @@ import React from "react";
 import { Redirect } from "react-router-dom";
 
 class Results extends React.Component {
-  state = {
-    username: "",
-    week: "",
-    teamsStats: [],
-    game1: [],
-    game2: [],
-    game3: [],
-    redirect: false
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      username: "",
+      week: "",
+      teamsStats: [],
+      game1: [],
+      game2: [],
+      game3: [],
+      redirect: false
+    };
+  }
 
   //run on page open
   componentDidMount() {
@@ -22,11 +26,10 @@ class Results extends React.Component {
   //sets state based on results calculated in franchise.js
   setStateValues = () => {
     this.setState({
-      teamStats: this.props.location.state.teamStats,
+      teamsStats: this.props.location.state.teamsStats,
       game1: this.props.location.state.game1,
       game2: this.props.location.state.game2,
-      game3: this.props.location.state.game3,
-      rdirect: false
+      game3: this.props.location.state.game3
     });
   };
 

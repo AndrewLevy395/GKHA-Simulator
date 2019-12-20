@@ -10,6 +10,7 @@ import Franchise from "./components/pages/Franchise";
 import FranchiseStart from "./components/pages/FranchiseStart";
 import Results from "./components/pages/Results";
 import FranchiseLogOut from "./components/pages/FranchiseLogOut";
+import Standings from "./components/pages/Standings";
 
 //app holds all components
 class App extends Component {
@@ -34,6 +35,7 @@ class App extends Component {
           <Route path="/franchise" component={Franchise} />
           <Route path="/results" component={Results} />
           <Route path="/franchiselogout" component={FranchiseLogOut} />
+          <Route path="/standings" component={Standings} />
           <Route path="/app" component={App} />
         </div>
       </Router>

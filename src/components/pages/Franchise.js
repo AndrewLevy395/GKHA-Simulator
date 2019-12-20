@@ -6,6 +6,7 @@ import { Redirect } from "react-router-dom";
 class Franchise extends React.Component {
   state = {
     username: "",
+    userteam: "",
     week: "",
     redirect: false,
     calcredirect: false,
@@ -17,8 +18,10 @@ class Franchise extends React.Component {
 
   //on page open
   componentDidMount() {
+    this.getTeams();
     this.getWeek();
     this.getUsername();
+    this.getUserteam();
   }
 
   //gets username of player
@@ -33,6 +36,21 @@ class Franchise extends React.Component {
       })
       .then(text => {
         this.setState({ username: text });
+      });
+  };
+
+  //gets userteam of player
+  getUserteam = () => {
+    fetch("http://localhost:8080/userteamget", {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" }
+    })
+      .then(function(response) {
+        return response.text();
+      })
+      .then(text => {
+        this.setState({ userteam: JSON.parse(text) });
       });
   };
 
@@ -51,7 +69,7 @@ class Franchise extends React.Component {
       });
   };
 
-  //get all teams data, runs functions that calculate winner, returns data of results and sets redirect
+  //get all teams data
   getTeams = () => {
     fetch("http://localhost:8080/teamsget", {
       method: "GET",
@@ -71,36 +89,38 @@ class Franchise extends React.Component {
           set.smashvilleSeason,
           set.southsideSeason
         ];
-        let scheduler = { schedule };
-        let scheduleWeek = this.state.week % 5;
-        let weeklyLineup = JSON.parse(scheduler.schedule[scheduleWeek].lineup);
         this.setState({ teamsStats: seasonTeams });
-        let game1 = { t1: weeklyLineup[0], t2: weeklyLineup[1] };
-        let game2 = { t1: weeklyLineup[2], t2: weeklyLineup[3] };
-        let game3 = { t1: weeklyLineup[4], t2: weeklyLineup[5] };
-        let result1 = this.calculateCaps(game1);
-        let result2 = this.calculateCaps(game2);
-        let result3 = this.calculateCaps(game3);
-        this.setState({
-          game1: [
-            result1.winner + " " + result1.winscore + " WIN! - ",
-            result1.loser + " " + result1.losescore + " LOSE!"
-          ],
-          game2: [
-            result2.winner + " " + result2.winscore + " WIN! - ",
-            result2.loser + " " + result2.losescore + " LOSE!"
-          ],
-          game3: [
-            result3.winner + " " + result3.winscore + " WIN! - ",
-            result3.loser + " " + result3.losescore + " LOSE!"
-          ]
-        });
-      })
-      .then(() =>
-        this.setState({
-          calcredirect: true
-        })
-      );
+      });
+  };
+
+  //runs functions that calculate winner, returns data of results and sets redirect
+  getResults = () => {
+    let scheduler = { schedule };
+    let scheduleWeek = this.state.week % 10;
+    let weeklyLineup = JSON.parse(scheduler.schedule[scheduleWeek].lineup);
+    let game1 = { t1: weeklyLineup[0], t2: weeklyLineup[1] };
+    let game2 = { t1: weeklyLineup[2], t2: weeklyLineup[3] };
+    let game3 = { t1: weeklyLineup[4], t2: weeklyLineup[5] };
+    let result1 = this.calculateCaps(game1);
+    let result2 = this.calculateCaps(game2);
+    let result3 = this.calculateCaps(game3);
+    this.setState({
+      game1: [
+        result1.winner + " " + result1.winscore + " WIN! - ",
+        result1.loser + " " + result1.losescore + " LOSE!"
+      ],
+      game2: [
+        result2.winner + " " + result2.winscore + " WIN! - ",
+        result2.loser + " " + result2.losescore + " LOSE!"
+      ],
+      game3: [
+        result3.winner + " " + result3.winscore + " WIN! - ",
+        result3.loser + " " + result3.losescore + " LOSE!"
+      ]
+    });
+    this.setState({
+      calcredirect: true
+    });
   };
 
   //calculates and returns winners and scores
@@ -265,7 +285,7 @@ class Franchise extends React.Component {
   //runs methods that calculate results
   //exists for the purpose of paralleling setRedirect
   setCalculate = () => {
-    this.getTeams();
+    this.getResults();
   };
 
   //redirects page to results of game
@@ -282,6 +302,31 @@ class Franchise extends React.Component {
               game1: this.state.game1,
               game2: this.state.game2,
               game3: this.state.game3
+            }
+          }}
+        />
+      );
+    }
+  };
+
+  //sets state so that page can redirct
+  setStandings = () => {
+    this.setState({
+      standingredirect: true
+    });
+  };
+
+  //redirects page to standings
+  standRedirect = event => {
+    if (this.state.standingredirect) {
+      return (
+        <Redirect
+          to={{
+            pathname: "/standings",
+            state: {
+              username: this.state.username,
+              userteam: this.state.userteam,
+              teamsStats: this.state.teamsStats
             }
           }}
         />
@@ -319,17 +364,26 @@ class Franchise extends React.Component {
       <React.Fragment>
         {this.renderRedirect()}
         {this.calcRedirect()}
+        {this.standRedirect()}
         <h1>Franchise Menu</h1>
-        <p>{this.state.username}</p>
+        <p>
+          Coach {this.state.username} of the {this.state.userteam}
+        </p>
         <p>Week: {this.state.week}</p>
         <button type="button" onClick={this.setCalculate}>
           Play Game
         </button>
         <br />
         <br />
+        <button type="button" onClick={this.setStandings}>
+          Standings
+        </button>
+        <br />
+        <br />
         <button type="button" onClick={this.setRedirect}>
           Log Out
         </button>
+        <br />
       </React.Fragment>
     );
   }
