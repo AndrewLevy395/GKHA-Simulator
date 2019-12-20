@@ -15,11 +15,13 @@ class Franchise extends React.Component {
     game3: []
   };
 
+  //on page open
   componentDidMount() {
     this.getWeek();
     this.getUsername();
   }
 
+  //gets username of player
   getUsername = () => {
     fetch("http://localhost:8080/usernameget", {
       method: "GET",
@@ -34,6 +36,7 @@ class Franchise extends React.Component {
       });
   };
 
+  //gets the week of the season
   getWeek = () => {
     fetch("http://localhost:8080/weekget", {
       method: "GET",
@@ -48,6 +51,7 @@ class Franchise extends React.Component {
       });
   };
 
+  //get all teams data, runs functions that calculate winner, returns data of results and sets redirect
   getTeams = () => {
     fetch("http://localhost:8080/teamsget", {
       method: "GET",
@@ -99,14 +103,12 @@ class Franchise extends React.Component {
       );
   };
 
+  //calculates and returns winners and scores
   calculateCaps = game => {
     let teams = this.state.teamsStats;
-
     let home = teams[game.t1 - 1];
     let away = teams[game.t2 - 1];
-
     let gameTeams = { home: home, away: away };
-
     let winner = this.calculateWinner(gameTeams);
     let score = this.calculateScore();
     if (winner === "home") {
@@ -134,6 +136,7 @@ class Franchise extends React.Component {
     }
   };
 
+  //calculate the winner of the game
   calculateWinner = gameTeams => {
     let winner;
     let playerList = { playerlist };
@@ -208,6 +211,7 @@ class Franchise extends React.Component {
     return winner;
   };
 
+  //calculates the score of the game
   calculateScore = () => {
     let winScore = Math.floor(Math.random() * 7 + 1);
     if (winScore === 7) {
@@ -224,6 +228,7 @@ class Franchise extends React.Component {
     return { winScore: winScore, loseScore: loseScore };
   };
 
+  //increments record of winning teams
   setWinner = winner => {
     let userdata = {
       team: winner,
@@ -240,6 +245,7 @@ class Franchise extends React.Component {
     });
   };
 
+  //increments record of losing teams
   setLoser = loser => {
     let userdata = {
       team: loser,
@@ -256,10 +262,13 @@ class Franchise extends React.Component {
     });
   };
 
+  //runs methods that calculate results
+  //exists for the purpose of paralleling setRedirect
   setCalculate = () => {
     this.getTeams();
   };
 
+  //redirects page to results of game
   calcRedirect = event => {
     if (this.state.calcredirect) {
       return (
@@ -280,12 +289,14 @@ class Franchise extends React.Component {
     }
   };
 
+  //sets state so that page can redirct
   setRedirect = () => {
     this.setState({
       redirect: true
     });
   };
 
+  //redirects page to logout
   renderRedirect = event => {
     if (this.state.redirect) {
       return (
@@ -302,6 +313,7 @@ class Franchise extends React.Component {
     }
   };
 
+  //display franchise screen
   render() {
     return (
       <React.Fragment>

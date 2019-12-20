@@ -7,23 +7,26 @@ const cors = require("cors");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 
+//cors
 const corsOptions = {
   origin: "http://localhost:3000",
   credentials: true
 };
 
 app.use(cors(corsOptions));
-app.use(bodyParser.json());
 
-if (process.env.NODE_ENV !== "production") {
-  require("dotenv").config();
-}
-
-//cors
 app.get("/cors-entry", function(req, res, next) {
   console.log("CORS Accessed");
   res.json({ msg: "CORS-enabled for all origins!" });
 });
+
+//body parser
+app.use(bodyParser.json());
+
+// check production
+if (process.env.NODE_ENV !== "production") {
+  require("dotenv").config();
+}
 
 //mongodb
 let franchiseColl = null;
@@ -40,6 +43,7 @@ client.connect(err => {
   client.close;
 });
 
+//viewing session in mongo
 const store = new MongoDBStore({
   uri: uri,
   collection: "sessions"
@@ -48,6 +52,7 @@ store.on("error", function(error) {
   console.log(error);
 });
 
+//session
 app.use(
   session({
     secret: "gkha secret sauce",
@@ -55,7 +60,7 @@ app.use(
   })
 );
 
-//add user
+//add user with all default season information
 app.post("/addfranchise", function(req, res) {
   const data = {
     username: req.body.username,
@@ -134,6 +139,7 @@ app.post("/addfranchise", function(req, res) {
   }
 });
 
+//increment the week after viewing week results
 app.post("/incrementweek", function(req, res) {
   franchiseColl.findOne({ username: req.session.user }, function(err, bdata) {
     if (err) {
@@ -151,18 +157,21 @@ app.post("/incrementweek", function(req, res) {
   res.end();
 });
 
+//remove the username from the session
 app.post("/usernamerem", function(req, res) {
   req.session.user = "";
   req.session.save();
   res.end();
 });
 
+//set the username of the session
 app.post("/usernameset", function(req, res) {
   req.session.user = req.body.username;
   req.session.save();
   res.end();
 });
 
+//check if the username is in the database already
 app.post("/usernamecheck", function(req, res) {
   let franchise;
   franchiseColl.findOne({ username: req.body.username }, function(err, bdata) {
@@ -178,6 +187,7 @@ app.post("/usernamecheck", function(req, res) {
   });
 });
 
+//increment the record of the team
 app.post("/setrecord", function(req, res) {
   franchiseColl.findOne({ username: req.session.user }, function(err, bdata) {
     if (err) {
@@ -230,6 +240,7 @@ app.post("/setrecord", function(req, res) {
   });
 });
 
+//get team data for all teams
 app.get("/teamsget", function(req, res) {
   let franchise;
 
@@ -242,6 +253,7 @@ app.get("/teamsget", function(req, res) {
   });
 });
 
+//get the week
 app.get("/weekget", function(req, res) {
   let franchise;
 
@@ -254,10 +266,12 @@ app.get("/weekget", function(req, res) {
   });
 });
 
+//get the username of the session
 app.get("/usernameget", function(req, res) {
   res.end(req.session.user);
 });
 
+//server
 app.applyPort = function(port) {
   server.listen(port);
   let message = "listening on port: " + port;

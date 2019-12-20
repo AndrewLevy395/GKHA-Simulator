@@ -11,6 +11,7 @@ class FranchiseLogOut extends React.Component {
     redirect: false
   };
 
+  //removes username
   remUsername = () => {
     let userdata = {
       username: ""
@@ -24,12 +25,14 @@ class FranchiseLogOut extends React.Component {
     });
   };
 
+  //changes state to allow redirect
   setRedirect = () => {
     this.setState({
       redirect: true
     });
   };
 
+  //redirects page to menu and removes player's username
   renderRedirect = event => {
     this.remUsername();
     if (this.state.redirect) {

@@ -11,6 +11,7 @@ import FranchiseStart from "./components/pages/FranchiseStart";
 import Results from "./components/pages/Results";
 import FranchiseLogOut from "./components/pages/FranchiseLogOut";
 
+//app holds all components
 class App extends Component {
   render() {
     return (

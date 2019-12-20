@@ -8,12 +8,14 @@ class FranchiseLogIn extends React.Component {
     username: ""
   };
 
+  //runs on page open
   componentDidMount() {
     this.setState({
       redirect: false
     });
   }
 
+  //checks if franchise already exists
   checkFranchise = () => {
     let userdata = {
       username: this.state.username
@@ -33,6 +35,7 @@ class FranchiseLogIn extends React.Component {
       });
   };
 
+  //loads franchise (if it exists)
   loadFranchise = result => {
     if (result !== "invalid") {
       let userdata = {
@@ -50,10 +53,13 @@ class FranchiseLogIn extends React.Component {
     }
   };
 
+  //runs check franchise
+  //exists to parellel setRedirect
   setUsernameRedirect = () => {
     this.checkFranchise();
   };
 
+  //redirects page to franchise
   renderRedirect = event => {
     if (this.state.redirect) {
       return (
@@ -66,12 +72,14 @@ class FranchiseLogIn extends React.Component {
     }
   };
 
+  //changes state to allow redirect
   setRedirect = () => {
     this.setState({
       redirect: true
     });
   };
 
+  //updates name live
   myChangeHandler = event => {
     let name = event.target.name;
     let value = event.target.value;

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
+//main menu of game
 function Menu() {
   return (
     <React.Fragment>

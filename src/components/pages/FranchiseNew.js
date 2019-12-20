@@ -10,6 +10,7 @@ class FranchiseNew extends React.Component {
     userteam: "Alaskan Thunder"
   };
 
+  //creates franchise
   createFranchise = () => {
     let userdata = {
       username: this.state.username,
@@ -24,12 +25,14 @@ class FranchiseNew extends React.Component {
     });
   };
 
+  //sets state to allow redirect
   setRedirect = () => {
     this.setState({
       redirect: true
     });
   };
 
+  //redirects page to start of franchise
   renderRedirect = event => {
     if (this.state.redirect) {
       this.createFranchise();
@@ -47,6 +50,7 @@ class FranchiseNew extends React.Component {
     }
   };
 
+  //shows name as it is updated live
   myChangeHandler = event => {
     let name = event.target.name;
     let value = event.target.value;

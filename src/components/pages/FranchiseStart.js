@@ -8,12 +8,14 @@ class FranchiseStart extends React.Component {
     userteam: this.props.location.state.userteam
   };
 
+  //runs on page open
   componentDidMount() {
     this.setState({
       redirect: false
     });
   }
 
+  //sets username
   setUsername = () => {
     let userdata = {
       username: this.state.username
@@ -31,16 +33,20 @@ class FranchiseStart extends React.Component {
     }
   };
 
+  //runs set username
+  //exists to parallel setRedirect
   setUsernameRedirect = () => {
     this.setUsername();
   };
 
+  //sets state to allow redirect
   setRedirect = () => {
     this.setState({
       redirect: true
     });
   };
 
+  //redirects page to franchise menu
   renderRedirect = event => {
     if (this.state.redirect) {
       return (

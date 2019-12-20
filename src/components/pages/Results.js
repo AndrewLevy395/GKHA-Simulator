@@ -12,12 +12,14 @@ class Results extends React.Component {
     redirect: false
   };
 
+  //run on page open
   componentDidMount() {
     this.getUsername();
     this.getWeek();
     this.setStateValues();
   }
 
+  //sets state based on results calculated in franchise.js
   setStateValues = () => {
     this.setState({
       teamStats: this.props.location.state.teamStats,
@@ -28,6 +30,7 @@ class Results extends React.Component {
     });
   };
 
+  //get the week
   getWeek = () => {
     fetch("http://localhost:8080/weekget", {
       method: "GET",
@@ -42,6 +45,7 @@ class Results extends React.Component {
       });
   };
 
+  //get the username
   getUsername = () => {
     fetch("http://localhost:8080/usernameget", {
       method: "GET",
@@ -56,6 +60,7 @@ class Results extends React.Component {
       });
   };
 
+  //increment the week on click
   incrementWeek = () => {
     fetch("http://localhost:8080/incrementweek", {
       method: "POST",
@@ -68,10 +73,12 @@ class Results extends React.Component {
     });
   };
 
+  //runs increment week and sets state to allow redirect
   setRedirect = () => {
     this.incrementWeek();
   };
 
+  //redirects to franchise menu
   renderRedirect = event => {
     if (this.state.redirect) {
       return (
