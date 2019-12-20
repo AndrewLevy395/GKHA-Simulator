@@ -81,7 +81,7 @@ class Standings extends React.Component {
               <th>Team</th>
               <th> Wins </th>
               <th> Losses </th>
-              <th>OTL</th>
+              <th> OT </th>
               <th></th>
               <th>Scored</th>
               <th>Allowed</th>

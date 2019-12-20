@@ -65,15 +65,21 @@ class Results extends React.Component {
 
   //increment the week on click
   incrementWeek = () => {
-    fetch("http://localhost:8080/incrementweek", {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" }
-    }).then(() => {
+    if (this.props.location.state.playoffs !== true) {
+      fetch("http://localhost:8080/incrementweek", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" }
+      }).then(() => {
+        this.setState({
+          redirect: true
+        });
+      });
+    } else {
       this.setState({
         redirect: true
       });
-    });
+    }
   };
 
   //runs increment week and sets state to allow redirect

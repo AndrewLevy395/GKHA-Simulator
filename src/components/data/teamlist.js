@@ -1,28 +1,76 @@
 const teamlist = [
   {
-    team: "1",
-    name: "Alaskan Thunder"
+    team: "Alaskan Thunder",
+    wins: 0,
+    losses: 0,
+    overtime: 0,
+    points: 0,
+    goalsFor: 0,
+    goalsAllowed: 0,
+    forward: "Erik Galuska",
+    dforward: "Andrew Levy",
+    goalie: "Ricky Novia"
   },
   {
-    team: "2",
-    name: "American Revolution"
+    team: "American Revolution",
+    wins: 0,
+    losses: 0,
+    overtime: 0,
+    points: 0,
+    goalsFor: 0,
+    goalsAllowed: 0,
+    forward: "Mikey Papa",
+    dforward: "Owen Brown",
+    goalie: "Mike Marotta"
   },
   {
-    team: "3",
-    name: "Boondock Beluga Whales"
+    team: "Boondock Beluga Whales",
+    wins: 0,
+    losses: 0,
+    overtime: 0,
+    points: 0,
+    goalsFor: 0,
+    goalsAllowed: 0,
+    forward: "Austin Ingarra",
+    dforward: "Darren Barille",
+    goalie: "Alec Fowler"
   },
   {
-    team: "4",
-    name: "Florida Tropics"
+    team: "Florida Tropics",
+    wins: 0,
+    losses: 0,
+    overtime: 0,
+    points: 0,
+    goalsFor: 0,
+    goalsAllowed: 0,
+    forward: "Aidan Murray",
+    dforward: "Chris Horowitz",
+    goalie: "Collin Salatto"
   },
   {
-    team: "5",
-    name: "Smashville Chippewas"
+    team: "Smashville Chippewas",
+    wins: 0,
+    losses: 0,
+    overtime: 0,
+    points: 0,
+    goalsFor: 0,
+    goalsAllowed: 0,
+    forward: "Sal DeLucia",
+    dforward: "Vinny Cleary",
+    goalie: "Tom Bishop"
   },
   {
-    team: "6",
-    name: "Southside Spartans"
+    team: "Southside Spartans",
+    wins: 0,
+    losses: 0,
+    overtime: 0,
+    points: 0,
+    goalsFor: 0,
+    goalsAllowed: 0,
+    forward: "Chris Papa",
+    dforward: "Erik Levenduski",
+    goalie: "Matt Palma"
   }
 ];
 
-export default teamlist;
+module.exports = teamlist;

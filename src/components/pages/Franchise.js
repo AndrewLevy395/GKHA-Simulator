@@ -8,12 +8,15 @@ class Franchise extends React.Component {
     username: "",
     userteam: "",
     week: "",
+    weekDisplay: "",
     redirect: false,
     calcredirect: false,
+    bracketRedirect: false,
     teamsStats: [],
     game1: [],
     game2: [],
-    game3: []
+    game3: [],
+    playoffs: false
   };
 
   //on page open
@@ -23,6 +26,40 @@ class Franchise extends React.Component {
     this.getUsername();
     this.getUserteam();
   }
+
+  //sets playoffs
+  setPlayoffs = () => {
+    let teams = this.state.teamsStats;
+    teams.sort(function(a, b) {
+      return b.points - a.points || b.goalsFor - a.goalsFor;
+    });
+    let userdata = teams.slice(0, 4);
+    let stringdata = JSON.stringify(userdata);
+    fetch("http://localhost:8080/playoffset", {
+      method: "POST",
+      body: stringdata,
+      credentials: "include",
+      headers: { "Content-Type": "application/json" }
+    });
+  };
+
+  //checks playoffs if season is in playoffs
+  checkPlayoffs = () => {
+    if (this.state.week === "11") {
+      this.setState({ playoffs: true });
+      this.setState({ weekDisplay: "Semifinals" });
+      fetch("http://localhost:8080/incrementweek", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" }
+      });
+      this.setPlayoffs();
+    }
+    if (this.state.week === "12") {
+      this.setState({ playoffs: true });
+      this.setState({ weekDisplay: "Semifinals" });
+    }
+  };
 
   //gets username of player
   getUsername = () => {
@@ -65,7 +102,9 @@ class Franchise extends React.Component {
         return response.text();
       })
       .then(text => {
-        this.setState({ week: text });
+        this.setState({ week: text, weekDisplay: text }, function() {
+          this.checkPlayoffs();
+        });
       });
   };
 
@@ -81,14 +120,7 @@ class Franchise extends React.Component {
       })
       .then(text => {
         let set = JSON.parse(text);
-        let seasonTeams = [
-          set.alaskaSeason,
-          set.americaSeason,
-          set.boondockSeason,
-          set.floridaSeason,
-          set.smashvilleSeason,
-          set.southsideSeason
-        ];
+        let seasonTeams = set;
         this.setState({ teamsStats: seasonTeams });
       });
   };
@@ -358,7 +390,8 @@ class Franchise extends React.Component {
               teamsStats: this.state.teamsStats,
               game1: this.state.game1,
               game2: this.state.game2,
-              game3: this.state.game3
+              game3: this.state.game3,
+              playoffs: this.state.playoffs
             }
           }}
         />
@@ -415,6 +448,50 @@ class Franchise extends React.Component {
     }
   };
 
+  //displays play button
+  displayPlay = event => {
+    if (this.state.playoffs === false) {
+      return (
+        <button type="button" onClick={this.setCalculate}>
+          Play Game
+        </button>
+      );
+    }
+  };
+
+  //sets state so that page can redirct
+  setBracketRedirect = () => {
+    this.setState({ bracketRedirect: true });
+  };
+
+  //redirects page to bracket
+  bracketRedirect = event => {
+    if (this.state.bracketRedirect) {
+      return (
+        <Redirect
+          to={{
+            pathname: "/bracket",
+            state: {
+              username: this.state.username,
+              userteam: this.state.userteam
+            }
+          }}
+        />
+      );
+    }
+  };
+
+  //displays playoff button
+  displayPlayoff = event => {
+    if (this.state.playoffs === true) {
+      return (
+        <button type="button" onClick={this.setBracketRedirect}>
+          View Playoff Bracket
+        </button>
+      );
+    }
+  };
+
   //display franchise screen
   render() {
     return (
@@ -422,14 +499,14 @@ class Franchise extends React.Component {
         {this.renderRedirect()}
         {this.calcRedirect()}
         {this.standRedirect()}
+        {this.bracketRedirect()}
         <h1>Franchise Menu</h1>
         <p>
           Coach {this.state.username} of the {this.state.userteam}
         </p>
-        <p>Week: {this.state.week}</p>
-        <button type="button" onClick={this.setCalculate}>
-          Play Game
-        </button>
+        <p>Week: {this.state.weekDisplay}</p>
+        {this.displayPlay()}
+        {this.displayPlayoff()}
         <br />
         <br />
         <button type="button" onClick={this.setStandings}>
