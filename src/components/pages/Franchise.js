@@ -1,6 +1,5 @@
 import React from "react";
 import schedule from "../data/schedule";
-import teamlist from "../data/teamlist";
 import playerlist from "../data/playerlist";
 import { Redirect } from "react-router-dom";
 
@@ -69,7 +68,7 @@ class Franchise extends React.Component {
           set.southsideSeason
         ];
         let scheduler = { schedule };
-        let scheduleWeek = (this.state.week % 5) - 1;
+        let scheduleWeek = this.state.week % 5;
         let weeklyLineup = JSON.parse(scheduler.schedule[scheduleWeek].lineup);
         this.setState({ teamsStats: seasonTeams });
         let game1 = { t1: weeklyLineup[0], t2: weeklyLineup[1] };
@@ -101,67 +100,107 @@ class Franchise extends React.Component {
   };
 
   calculateCaps = game => {
-    let teams = { teamlist };
-    let players = { playerlist };
-    let home = teams.teamlist[game.t1 - 1].name;
-    let away = teams.teamlist[game.t2 - 1].name;
-    let homeGoalie, homeForward, awayGoalie, awayForward;
-    let hgCap, hfCap, agCap, afCap;
-    for (let i = 0; i < this.state.teamsStats.length; i++) {
-      if (this.state.teamsStats[i][0] === home) {
-        homeGoalie = this.state.teamsStats[i][4];
-        homeForward = this.state.teamsStats[i][3];
-      }
-      if (this.state.teamsStats[i][0] === away) {
-        awayGoalie = this.state.teamsStats[i][4];
-        awayForward = this.state.teamsStats[i][3];
-      }
-    }
-    for (let i = 0; i < players.playerlist.length; i++) {
-      if (players.playerlist[i].name === homeGoalie) {
-        hgCap = players.playerlist[i].goalie;
-      }
-      if (players.playerlist[i].name === homeForward) {
-        hfCap = players.playerlist[i].forward;
-      }
-      if (players.playerlist[i].name === awayGoalie) {
-        agCap = players.playerlist[i].goalie;
-      }
-      if (players.playerlist[i].name === awayForward) {
-        afCap = players.playerlist[i].forward;
-      }
-    }
-    let caps = [hgCap, hfCap, agCap, afCap];
-    let winner = this.calculateWinner(caps);
+    let teams = this.state.teamsStats;
+
+    let home = teams[game.t1 - 1];
+    let away = teams[game.t2 - 1];
+
+    let gameTeams = { home: home, away: away };
+
+    let winner = this.calculateWinner(gameTeams);
     let score = this.calculateScore();
     if (winner === "home") {
-      this.setWinner(home);
-      this.setLoser(away);
+      this.setWinner(home.team);
+      this.setLoser(away.team);
       return {
-        winner: home,
-        loser: away,
+        home: home.team,
+        away: away.team,
+        winner: home.team,
+        loser: away.team,
         winscore: score.winScore,
         losescore: score.loseScore
       };
     } else {
-      this.setWinner(away);
-      this.setLoser(home);
+      this.setWinner(away.team);
+      this.setLoser(home.team);
       return {
-        winner: away,
-        loser: home,
+        home: home.team,
+        away: away.team,
+        winner: away.team,
+        loser: home.team,
         winscore: score.winScore,
         losescore: score.loseScore
       };
     }
   };
 
-  calculateWinner = caps => {
+  calculateWinner = gameTeams => {
     let winner;
-    let hometotal = caps[0] + caps[1];
-    let awaytotal = caps[2] + caps[3];
-    let total = hometotal + awaytotal;
-    let winNum = Math.floor(Math.random() * total + 1);
-    if (winNum <= hometotal) {
+    let playerList = { playerlist };
+    let players = playerList.playerlist;
+    let hg, hf, ag, af, totalChance;
+    let homeChance = 1;
+    let awayChance = 1;
+    for (let i = 0; i < players.length; i++) {
+      if (gameTeams.home.forward === players[i].name) {
+        hf = players[i];
+      } else if (gameTeams.away.forward === players[i].name) {
+        af = players[i];
+      } else if (gameTeams.home.goalie === players[i].name) {
+        hg = players[i];
+      } else if (gameTeams.away.goalie === players[i].name) {
+        ag = players[i];
+      }
+    }
+
+    //determine if forward caps are better than goalie caps of opposing team
+    if (hf.forward >= ag.goalie) {
+      homeChance = homeChance + 20;
+    } else {
+      awayChance = awayChance + 20;
+    }
+    if (hg.goalie >= af.forward) {
+      homeChance = homeChance + 20;
+    } else {
+      awayChance = awayChance + 20;
+    }
+
+    //determine if shooting, defense, and strength are better for each forward
+    if (hf.shooting >= af.shooting) {
+      homeChance = homeChance + 10;
+    } else {
+      awayChance = awayChance + 10;
+    }
+    if (hf.defense >= af.defense) {
+      homeChance = homeChance + 10;
+    } else {
+      awayChance = awayChance + 10;
+    }
+    if (hf.strength >= af.strength) {
+      homeChance = homeChance + 10;
+    } else {
+      awayChance = awayChance + 10;
+    }
+
+    //determine if size and strength are better for each goalie
+    if (hg.size >= ag.size) {
+      homeChance = homeChance + 20;
+    } else {
+      awayChance = awayChance + 20;
+    }
+    if (hg.strength >= ag.strength) {
+      homeChance = homeChance + 8;
+    } else {
+      awayChance = awayChance + 8;
+    }
+
+    //randomize winner based on chances
+    totalChance = homeChance + awayChance;
+    console.log(homeChance + " - " + gameTeams.home.team);
+    console.log(awayChance + " - " + gameTeams.away.team);
+    let winNum = Math.floor(Math.random() * totalChance + 1);
+    console.log(winNum);
+    if (winNum <= homeChance) {
       winner = "home";
     } else {
       winner = "away";
@@ -182,16 +221,39 @@ class Franchise extends React.Component {
       }
     }
     let loseScore = Math.floor(Math.random() * winScore);
-    console.log(winScore, loseScore);
     return { winScore: winScore, loseScore: loseScore };
   };
 
   setWinner = winner => {
-    console.log(winner);
+    let userdata = {
+      team: winner,
+      status: "win"
+    };
+    let stringdata = JSON.stringify(userdata);
+    fetch("http://localhost:8080/setrecord", {
+      method: "POST",
+      body: stringdata,
+      credentials: "include",
+      headers: { "Content-Type": "application/json" }
+    }).then(() => {
+      console.log("Worked");
+    });
   };
 
   setLoser = loser => {
-    console.log(loser);
+    let userdata = {
+      team: loser,
+      status: "lose"
+    };
+    let stringdata = JSON.stringify(userdata);
+    fetch("http://localhost:8080/setrecord", {
+      method: "POST",
+      body: stringdata,
+      credentials: "include",
+      headers: { "Content-Type": "application/json" }
+    }).then(() => {
+      console.log("Worked");
+    });
   };
 
   setCalculate = () => {
@@ -207,7 +269,7 @@ class Franchise extends React.Component {
             state: {
               username: this.state.username,
               userteam: this.state.userteam,
-              teamsStats: this.state.teamStats,
+              teamsStats: this.state.teamsStats,
               game1: this.state.game1,
               game2: this.state.game2,
               game3: this.state.game3

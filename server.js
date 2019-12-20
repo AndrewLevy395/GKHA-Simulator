@@ -60,43 +60,95 @@ app.post("/addfranchise", function(req, res) {
   const data = {
     username: req.body.username,
     userteam: req.body.userteam,
-    alaskaSeason: ["Alaskan Thunder", 0, 0, "Andrew Levy", "Ricky Novia"],
-    americaSeason: ["American Revolution", 0, 0, "Mikey Papa", "Mike Marotta"],
-    boondockSeason: [
-      "Boondock Beluga Whales",
-      0,
-      0,
-      "Austin Ingarra",
-      "Alec Fowler"
+    alaskaSeason: {
+      team: "Alaskan Thunder",
+      wins: 0,
+      losses: 0,
+      forward: "Andrew Levy",
+      goalie: "Ricky Novia"
+    },
+    americaSeason: {
+      team: "American Revolution",
+      wins: 0,
+      losses: 0,
+      forward: "Mikey Papa",
+      goalie: "Mike Marotta"
+    },
+    boondockSeason: {
+      team: "Boondock Beluga Whales",
+      wins: 0,
+      losses: 0,
+      forward: "Austin Ingarra",
+      goalie: "Alec Fowler"
+    },
+    floridaSeason: {
+      team: "Florida Tropics",
+      wins: 0,
+      losses: 0,
+      forward: "Chris Horowitz",
+      goalie: "Collin Salatto"
+    },
+    smashvilleSeason: {
+      team: "Smashville Chippewas",
+      wins: 0,
+      losses: 0,
+      forward: "Sal DeLucia",
+      goalie: "Tom Bishop"
+    },
+    southsideSeason: {
+      team: "Southside Spartans",
+      wins: 0,
+      losses: 0,
+      forward: "Chris Papa",
+      goalie: "Matt Palma"
+    },
+    freeAgents: [
+      "Matt Robidoux",
+      "Brad Robidoux",
+      "Ian Beling",
+      "George Bonadies"
     ],
-    floridaSeason: [
-      "Florida Tropics",
-      0,
-      0,
-      "Chris Horowitz",
-      "Collin Salatto"
+    futurePlayers: [
+      "Aidan Murray",
+      "Couch Cushion",
+      "Darren Barille",
+      "Devin Savold",
+      "Erik Galuska",
+      "Erik Levenduski",
+      "Jar of Peanut Butter",
+      "Jarrett Hissick",
+      "Kyle Kulthau",
+      "Maddy Levy",
+      "Marco Dugay",
+      "Owen Brown",
+      "Shem Prudhomme",
+      "Vinny Cleary"
     ],
-    smashvilleSeason: [
-      "Smashville Chippewas",
-      0,
-      0,
-      "Sal Delucia",
-      "Tom Bishop"
-    ],
-    southsideSeason: [
-      "Southside Spartans",
-      0,
-      0,
-      "Chris Papa",
-      "Matthew Palma"
-    ],
-    seasonInfo: [1]
+    seasonInfo: { week: 1 },
+    testValue: 0
   };
   try {
     franchiseColl.insertOne(data).then(result => res.json(result));
   } catch (e) {
     console.log(e + "ERROR HERE");
   }
+});
+
+app.post("/incrementweek", function(req, res) {
+  franchiseColl.findOne({ username: req.session.user }, function(err, bdata) {
+    if (err) {
+      return done(err);
+    }
+    franchiseColl.updateOne(
+      { username: req.session.user },
+      {
+        $inc: {
+          "seasonInfo.week": 1
+        }
+      }
+    );
+  });
+  res.end();
 });
 
 app.post("/usernamerem", function(req, res) {
@@ -126,6 +178,58 @@ app.post("/usernamecheck", function(req, res) {
   });
 });
 
+app.post("/setrecord", function(req, res) {
+  franchiseColl.findOne({ username: req.session.user }, function(err, bdata) {
+    if (err) {
+      return done(err);
+    }
+    let seasonTeams = [
+      { teamdata: bdata.alaskaSeason, win: 0, lose: 0 },
+      { teamdata: bdata.americaSeason, win: 0, lose: 0 },
+      { teamdata: bdata.boondockSeason, win: 0, lose: 0 },
+      { teamdata: bdata.floridaSeason, win: 0, lose: 0 },
+      { teamdata: bdata.smashvilleSeason, win: 0, lose: 0 },
+      { teamdata: bdata.southsideSeason, win: 0, lose: 0 }
+    ];
+    for (let i = 0; i < seasonTeams.length; i++) {
+      if (req.body.team === seasonTeams[i].teamdata.team) {
+        if (req.body.status === "win") {
+          seasonTeams[i].win++;
+          franchiseColl.updateOne(
+            { username: req.session.user },
+            {
+              $inc: {
+                "alaskaSeason.wins": seasonTeams[0].win,
+                "americaSeason.wins": seasonTeams[1].win,
+                "boondockSeason.wins": seasonTeams[2].win,
+                "floridaSeason.wins": seasonTeams[3].win,
+                "smashvilleSeason.wins": seasonTeams[4].win,
+                "southsideSeason.wins": seasonTeams[5].win
+              }
+            }
+          );
+        } else if (req.body.status === "lose") {
+          seasonTeams[i].lose++;
+          franchiseColl.updateOne(
+            { username: req.session.user },
+            {
+              $inc: {
+                "alaskaSeason.losses": seasonTeams[0].lose,
+                "americaSeason.losses": seasonTeams[1].lose,
+                "boondockSeason.losses": seasonTeams[2].lose,
+                "floridaSeason.losses": seasonTeams[3].lose,
+                "smashvilleSeason.losses": seasonTeams[4].lose,
+                "southsideSeason.losses": seasonTeams[5].lose
+              }
+            }
+          );
+        }
+      }
+    }
+    return res.end();
+  });
+});
+
 app.get("/teamsget", function(req, res) {
   let franchise;
 
@@ -145,7 +249,7 @@ app.get("/weekget", function(req, res) {
     if (err) {
       return done(err);
     }
-    franchise = bdata.seasonInfo[0];
+    franchise = bdata.seasonInfo.week;
     return res.end(JSON.stringify(franchise));
   });
 });

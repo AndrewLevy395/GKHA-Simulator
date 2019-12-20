@@ -1,4 +1,5 @@
 import React from "react";
+import { Redirect } from "react-router-dom";
 
 class Results extends React.Component {
   state = {
@@ -7,7 +8,8 @@ class Results extends React.Component {
     teamsStats: [],
     game1: [],
     game2: [],
-    game3: []
+    game3: [],
+    redirect: false
   };
 
   componentDidMount() {
@@ -21,7 +23,8 @@ class Results extends React.Component {
       teamStats: this.props.location.state.teamStats,
       game1: this.props.location.state.game1,
       game2: this.props.location.state.game2,
-      game3: this.props.location.state.game3
+      game3: this.props.location.state.game3,
+      rdirect: false
     });
   };
 
@@ -53,14 +56,46 @@ class Results extends React.Component {
       });
   };
 
+  incrementWeek = () => {
+    fetch("http://localhost:8080/incrementweek", {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" }
+    }).then(() => {
+      this.setState({
+        redirect: true
+      });
+    });
+  };
+
+  setRedirect = () => {
+    this.incrementWeek();
+  };
+
+  renderRedirect = event => {
+    if (this.state.redirect) {
+      return (
+        <Redirect
+          to={{
+            pathname: "/franchise"
+          }}
+        />
+      );
+    }
+  };
+
   render() {
     return (
       <React.Fragment>
         <h1>Results</h1>
+        {this.renderRedirect()}
         <p>username: {this.state.username}</p>
-        <p>result1: {this.state.game1}</p>
-        <p>result2: {this.state.game2}</p>
-        <p>result3: {this.state.game3}</p>
+        <p>{this.state.game1}</p>
+        <p>{this.state.game2}</p>
+        <p>{this.state.game3}</p>
+        <button type="button" onClick={this.setRedirect}>
+          Next Week
+        </button>
       </React.Fragment>
     );
   }
