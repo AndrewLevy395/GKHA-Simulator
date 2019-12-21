@@ -91,7 +91,7 @@ const playerlist = [
   },
   {
     name: "Darren Barille",
-    forward: 2,
+    forward: 3,
     goalie: 5,
     stamina: 9,
     shooting: 3,

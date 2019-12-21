@@ -7,6 +7,7 @@ const cors = require("cors");
 const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const teamlist = require("./src/components/data/teamlist");
+const playerstats = require("./src/components/data/playerstats");
 
 //cors
 const corsOptions = {
@@ -67,6 +68,7 @@ app.post("/addfranchise", function(req, res) {
     username: req.body.username,
     userteam: req.body.userteam,
     teams: teamlist,
+    playerStats: playerstats,
     freeAgents: [
       "Matt Robidoux",
       "Brad Robidoux",
@@ -220,6 +222,18 @@ app.get("/playoffteamsget", function(req, res) {
     }
     franchise = bdata.playoffTeams;
     return res.end(JSON.stringify(franchise));
+  });
+});
+
+//get team data for all playoff teams
+app.get("/playerstatsget", function(req, res) {
+  let players;
+  franchiseColl.findOne({ username: req.session.user }, function(err, bdata) {
+    if (err) {
+      return done(err);
+    }
+    players = bdata.playerStats;
+    return res.end(JSON.stringify(players));
   });
 });
 
