@@ -27,20 +27,29 @@ class FranchiseNew extends React.Component {
       body: stringdata,
       credentials: "include",
       headers: { "Content-Type": "application/json" }
-    });
+    })
+      .then(function(response) {
+        return response.text();
+      })
+      .then(text => {
+        if (text !== "invalid") {
+          this.setState({
+            redirect: true
+          });
+        } else {
+          console.log(text + ": Username already taken");
+        }
+      });
   };
 
   //sets state to allow redirect
   setRedirect = () => {
-    this.setState({
-      redirect: true
-    });
+    this.createFranchise();
   };
 
   //redirects page to start of franchise
   renderRedirect = event => {
     if (this.state.redirect) {
-      this.createFranchise();
       return (
         <Redirect
           to={{

@@ -89,11 +89,20 @@ app.post("/addfranchise", function(req, res) {
     seasonInfo: { week: 1 },
     testValue: 0
   };
-  try {
-    franchiseColl.insertOne(data).then(result => res.json(result));
-  } catch (e) {
-    console.log(e + "ERROR HERE");
-  }
+  franchiseColl.findOne({ username: req.body.username }, function(err, bdata) {
+    if (err) {
+      return done(err);
+    }
+    if (bdata) {
+      res.end("invalid");
+    } else {
+      try {
+        franchiseColl.insertOne(data).then(result => res.json(result));
+      } catch (e) {
+        console.log(e + "ERROR HERE");
+      }
+    }
+  });
 });
 
 //increment the week after viewing week results
