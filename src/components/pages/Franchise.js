@@ -13,9 +13,9 @@ class Franchise extends React.Component {
     calcredirect: false,
     bracketRedirect: false,
     teamsStats: [],
-    game1: [],
-    game2: [],
-    game3: [],
+    game1: {},
+    game2: {},
+    game3: {},
     playoffs: false
   };
 
@@ -137,18 +137,30 @@ class Franchise extends React.Component {
     let result2 = this.calculateCaps(game2);
     let result3 = this.calculateCaps(game3);
     this.setState({
-      game1: [
-        result1.winner + " " + result1.winscore + " WIN! - ",
-        result1.loser + " " + result1.losescore + " LOSE! " + result1.overtime
-      ],
-      game2: [
-        result2.winner + " " + result2.winscore + " WIN! - ",
-        result2.loser + " " + result2.losescore + " LOSE! " + result2.overtime
-      ],
-      game3: [
-        result3.winner + " " + result3.winscore + " WIN! - ",
-        result3.loser + " " + result3.losescore + " LOSE! " + result3.overtime
-      ]
+      game1: {
+        winner: result1.winner,
+        loser: result1.loser,
+        winscore: result1.winscore,
+        losescore: result1.losescore,
+        overtime: result1.overtime,
+        goals: result1.goals
+      },
+      game2: {
+        winner: result2.winner,
+        loser: result2.loser,
+        winscore: result2.winscore,
+        losescore: result2.losescore,
+        overtime: result2.overtime,
+        goals: result2.goals
+      },
+      game3: {
+        winner: result3.winner,
+        loser: result3.loser,
+        winscore: result3.winscore,
+        losescore: result3.losescore,
+        overtime: result3.overtime,
+        goals: result3.goals
+      }
     });
     this.setState({
       calcredirect: true
@@ -165,9 +177,12 @@ class Franchise extends React.Component {
     let gameTeams = { home: home, away: away };
     let winner = this.calculateWinner(gameTeams);
     let score = this.calculateScore();
+    let goalsSend = { teams: gameTeams, winner: winner, score: score };
+    let goalsResult = this.calculateGoals(goalsSend);
     if (score.winScore - score.loseScore === 1) {
       randOT = Math.floor(Math.random() * 4 + 1);
     }
+    //result sent to win/lose function
     let sendResult = {
       team: "",
       wingoals: score.winScore,
@@ -190,6 +205,7 @@ class Franchise extends React.Component {
         loser: away.team,
         winscore: score.winScore,
         losescore: score.loseScore,
+        goals: goalsResult,
         overtime: isOT
       };
     } else {
@@ -209,6 +225,7 @@ class Franchise extends React.Component {
         loser: home.team,
         winscore: score.winScore,
         losescore: score.loseScore,
+        goals: goalsResult,
         overtime: isOT
       };
     }
@@ -307,7 +324,7 @@ class Franchise extends React.Component {
   calculateScore = () => {
     let winScore = Math.floor(Math.random() * 7 + 1);
     if (winScore === 7) {
-      let randomAdd = Math.floor(Math.random() * 10 + 1);
+      let randomAdd = Math.floor(Math.random() * 20 + 1);
       if (randomAdd === 10) {
         winScore = 10;
       } else if (randomAdd === 9) {
@@ -318,6 +335,12 @@ class Franchise extends React.Component {
     }
     let loseScore = Math.floor(Math.random() * winScore);
     return { winScore: winScore, loseScore: loseScore };
+  };
+
+  //calculates and returns goals by each player
+  calculateGoals = game => {
+    let result = { hf: 0, hd: 0, hg: 0, af: 0, ad: 0, ag: 0 };
+    return result;
   };
 
   //increments record of winning teams

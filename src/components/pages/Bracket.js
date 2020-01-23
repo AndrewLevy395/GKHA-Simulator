@@ -12,6 +12,7 @@ class Bracket extends React.Component {
 
   componentDidMount() {
     this.setStateValues();
+    console.log(this.state.playoffTeams[0].team);
   }
 
   //sets state based on results calculated in franchise.js
@@ -26,6 +27,7 @@ class Bracket extends React.Component {
       })
       .then(text => {
         let set = JSON.parse(text);
+        console.log(set);
         this.setState({
           playoffTeams: set,
           userteam: this.props.location.state.userteam,
@@ -59,34 +61,50 @@ class Bracket extends React.Component {
     }
   };
 
+  //displays playoff button
+  displayPlayoff = event => {
+    if (this.state.showTeams === true) {
+      console.log(this.state.playoffTeams[0].team);
+      return (
+        <div>
+          <p>
+            1. {this.state.playoffTeams[0].team} - (
+            {this.state.playoffTeams[0].wins}-
+            {this.state.playoffTeams[0].losses}-
+            {this.state.playoffTeams[0].overtime})
+          </p>
+          <p>
+            4. {this.state.playoffTeams[3].team} - (
+            {this.state.playoffTeams[3].wins}-
+            {this.state.playoffTeams[3].losses}-
+            {this.state.playoffTeams[3].overtime})
+          </p>
+          <br />
+          <br />
+          <p>
+            2. {this.state.playoffTeams[1].team} - (
+            {this.state.playoffTeams[1].wins}-
+            {this.state.playoffTeams[1].losses}-
+            {this.state.playoffTeams[1].overtime})
+          </p>
+          <p>
+            3. {this.state.playoffTeams[2].team} - (
+            {this.state.playoffTeams[2].wins}-
+            {this.state.playoffTeams[2].losses}-
+            {this.state.playoffTeams[2].overtime})
+          </p>
+        </div>
+      );
+    }
+  };
+
   render() {
     return (
       <React.Fragment>
         {this.backRedirect()}
         <h1>Bracket</h1>
         <br />
-        <p>
-          1. {this.state.playoffTeams[0].team} - (
-          {this.state.playoffTeams[0].wins}-{this.state.playoffTeams[0].losses}-
-          {this.state.playoffTeams[0].overtime})
-        </p>
-        <p>
-          4. {this.state.playoffTeams[3].team} - (
-          {this.state.playoffTeams[3].wins}-{this.state.playoffTeams[3].losses}-
-          {this.state.playoffTeams[3].overtime})
-        </p>
-        <br />
-        <br />
-        <p>
-          2. {this.state.playoffTeams[1].team} - (
-          {this.state.playoffTeams[1].wins}-{this.state.playoffTeams[1].losses}-
-          {this.state.playoffTeams[1].overtime})
-        </p>
-        <p>
-          3. {this.state.playoffTeams[2].team} - (
-          {this.state.playoffTeams[2].wins}-{this.state.playoffTeams[2].losses}-
-          {this.state.playoffTeams[2].overtime})
-        </p>
+        {this.displayPlayoff()}
         <br />
         <br />
         <button type="button" onClick={this.setRedirect}>

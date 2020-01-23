@@ -12,7 +12,11 @@ class Results extends React.Component {
       game1: [],
       game2: [],
       game3: [],
-      redirect: false
+      stats1: {},
+      stats2: {},
+      stats3: {},
+      redirect: false,
+      results: false
     };
   }
 
@@ -29,7 +33,11 @@ class Results extends React.Component {
       teamsStats: this.props.location.state.teamsStats,
       game1: this.props.location.state.game1,
       game2: this.props.location.state.game2,
-      game3: this.props.location.state.game3
+      game3: this.props.location.state.game3,
+      stats1: this.props.location.state.stats1,
+      stats2: this.props.location.state.stats2,
+      stats3: this.props.location.state.stats3,
+      results: true
     });
   };
 
@@ -100,15 +108,45 @@ class Results extends React.Component {
     }
   };
 
+  //displays game results
+  displayResults = event => {
+    if (this.state.results === true) {
+      return (
+        <div>
+          <b>
+            {this.state.game1.winner} {this.state.game1.winscore} defeats{" "}
+            {this.state.game1.loser} {this.state.game1.losescore}{" "}
+            {this.state.game1.overtime}
+          </b>
+          <br />
+          <br />
+          <b>
+            {this.state.game2.winner} {this.state.game2.winscore} defeats{" "}
+            {this.state.game2.loser} {this.state.game2.losescore}{" "}
+            {this.state.game2.overtime}
+          </b>
+          <br />
+          <br />
+          <b>
+            {this.state.game3.winner} {this.state.game3.winscore} defeats{" "}
+            {this.state.game3.loser} {this.state.game3.losescore}{" "}
+            {this.state.game3.overtime}
+          </b>
+          <br />
+          <br />
+        </div>
+      );
+    }
+  };
+
+  // TO DO - CHANGE GAME1/2/3 TO FUNCTION THAT DISPLAYS ONLY WHEN LOADED
   render() {
     return (
       <React.Fragment>
         <h1>Results</h1>
         {this.renderRedirect()}
         <p>username: {this.state.username}</p>
-        <p>{this.state.game1}</p>
-        <p>{this.state.game2}</p>
-        <p>{this.state.game3}</p>
+        {this.displayResults()}
         <button type="button" onClick={this.setRedirect}>
           Next Week
         </button>
