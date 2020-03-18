@@ -16,7 +16,8 @@ class Franchise extends React.Component {
     game1: {},
     game2: {},
     game3: {},
-    playoffs: false
+    playoffs: false,
+    menuDisplay: true
   };
 
   //on page open
@@ -88,6 +89,7 @@ class Franchise extends React.Component {
       })
       .then(text => {
         this.setState({ userteam: JSON.parse(text) });
+        this.setState({ menuDisplay: true });
       });
   };
 
@@ -515,6 +517,33 @@ class Franchise extends React.Component {
     }
   };
 
+  //displays menu
+  displayResults = event => {
+    if (this.state.menuDisplay === true) {
+      return (
+        <div>
+          <p>
+            Coach {this.state.username} of the {this.state.userteam}
+          </p>
+          <p>Week: {this.state.weekDisplay}</p>
+          {this.displayPlay()}
+          {this.displayPlayoff()}
+          <br />
+          <br />
+          <button type="button" onClick={this.setStandings}>
+            Standings
+          </button>
+          <br />
+          <br />
+          <button type="button" onClick={this.setRedirect}>
+            Log Out
+          </button>
+          <br />
+        </div>
+      );
+    }
+  };
+
   //display franchise screen
   render() {
     return (
@@ -524,23 +553,7 @@ class Franchise extends React.Component {
         {this.standRedirect()}
         {this.bracketRedirect()}
         <h1>Franchise Menu</h1>
-        <p>
-          Coach {this.state.username} of the {this.state.userteam}
-        </p>
-        <p>Week: {this.state.weekDisplay}</p>
-        {this.displayPlay()}
-        {this.displayPlayoff()}
-        <br />
-        <br />
-        <button type="button" onClick={this.setStandings}>
-          Standings
-        </button>
-        <br />
-        <br />
-        <button type="button" onClick={this.setRedirect}>
-          Log Out
-        </button>
-        <br />
+        {this.displayResults()}
       </React.Fragment>
     );
   }
